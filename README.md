@@ -1,4 +1,4 @@
-# API - Biblioteca Digital (Desafio Backend)
+# Biblioteca Digital API
 
 API RESTful desenvolvida em NestJS para gerenciar uma plataforma de biblioteca digital, como parte de um desafio técnico. Permite o gerenciamento de Materiais (Livros, Artigos, Vídeos) e Autores (Pessoas, Instituições), com autenticação JWT e validação de dados rigorosa. O projeto é containerizado com Docker para facilitar a configuração e execução.
 
@@ -10,7 +10,7 @@ API RESTful desenvolvida em NestJS para gerenciar uma plataforma de biblioteca d
 * **Controle de Permissão:** Implementada regra de negócio crucial: apenas o usuário que cadastrou um material pode alterá-lo ou removê-lo.
 * **Integração com API Externa:** Ao cadastrar um Livro sem título ou número de páginas, a API consulta a [OpenLibrary Books API](https://openlibrary.org/developers/api) usando o ISBN fornecido para preencher esses campos automaticamente.
 * **Busca e Paginação:** Endpoint `GET /api/material` permite buscar materiais por termo (título, descrição, nome do autor) com resultados paginados (`?pagina=X&limite=Y`).
-* **Validação Robusta:** Utilização intensiva de `class-validator` e `class-transformer` em DTOs para garantir que todos os dados recebidos pela API sigam as regras especificadas no desafio (campos obrigatórios, formatos, tamanhos, valores únicos).
+* **Validação Robusta:** Utilização intensiva de `class-validator` e `class-transformer` em DTOs para garantir que todos os dados recebidos pela API sigam as regras de negócio (campos obrigatórios, formatos, tamanhos, valores únicos).
 * **Documentação Interativa:** Geração automática de documentação via Swagger (OpenAPI), acessível em `/api-docs`. *(Observação sobre a autenticação abaixo).*
 * **Testes Automatizados:** Testes unitários com Jest para garantir a lógica de negócio dos serviços principais (Autenticação, CRUD de Autor, CRUD de Material com permissões e API externa). Cobertura acima de 80%.
 * **Containerização:** Aplicação e banco de dados (PostgreSQL) totalmente configurados para rodar com Docker e Docker Compose, garantindo um ambiente de desenvolvimento consistente.
@@ -48,7 +48,8 @@ API RESTful desenvolvida em NestJS para gerenciar uma plataforma de biblioteca d
 
 1.  **Clonar o Repositório:**
     ```bash
-    git clone https://github.com/jlsm2/desafio-backend-rails.git
+    git clone https://github.com/jlsm2/biblioteca-digital.git
+    cd biblioteca-digital
     ```
 
 2.  **Configurar Variáveis de Ambiente:**
@@ -172,7 +173,7 @@ Os testes unitários foram escritos usando Jest e cobrem a lógica principal dos
 ## Regras de Negócio Chave Implementadas
 
 * **Unicidade:** E-mails de usuários, ISBNs de livros e DOIs de artigos devem ser únicos no sistema. A API retorna `409 Conflict` se houver tentativa de duplicidade.
-* **Validação de Dados:** Todos os campos de entrada (Body, Query Params) são validados via DTOs (`class-validator`) quanto a tipo, formato, tamanho e obrigatoriedade, conforme especificado no desafio. Requisições inválidas retornam `400 Bad Request` com mensagens claras.
+* **Validação de Dados:** Todos os campos de entrada (Body, Query Params) são validados via DTOs (`class-validator`) quanto a tipo, formato, tamanho e obrigatoriedade, conforme as regras de negócio. Requisições inválidas retornam `400 Bad Request` com mensagens claras.
 * **Integridade Referencial:** A API verifica se o `id_autor` fornecido ao criar um Material corresponde a um autor existente no banco de dados. Caso contrário, retorna `400 Bad Request`.
 * **Propriedade de Materiais:** As rotas `PATCH /api/material/:id` e `DELETE /api/material/:id` verificam se o `id_usuario` do token JWT corresponde ao `id_usuario_criador` do material. Se não corresponder, a API retorna `403 Forbidden`.
 * **Status Controlado:** O campo `status` dos Materiais só aceita os valores definidos no enum (`rascunho`, `publicado`, `arquivado`), garantido pela validação `@IsEnum` no DTO.
